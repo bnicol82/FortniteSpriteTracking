@@ -11,32 +11,45 @@
         .fortnite-font { font-family: 'Burbank Big Condensed', sans-serif; }
         .owned-btn { background: #262626; color: #a3a3a3; border: 1px solid #404040; }
         .owned-btn.active { background: #22c55e !important; color: white; border-color: #16a34a; }
-        /* Ensure the captured area has a fixed background and padding */
-        #capture-wrapper { background-color: #0a0a0a; padding: 20px; }
+        #capture-wrapper { background-color: #0a0a0a; padding: 20px; color: white; }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-gray-200">
+<body class="bg-[#0a0a0a]">
 
     <div class="p-4 flex gap-2">
-        <button onclick="exportData()" class="bg-gray-700 px-4 py-2 rounded text-xs font-bold">EXPORT</button>
-        <button onclick="importData()" class="bg-gray-700 px-4 py-2 rounded text-xs font-bold">IMPORT</button>
-        <button onclick="saveToPhotos()" class="bg-blue-600 px-4 py-2 rounded text-xs font-bold">SAVE FULL IMAGE</button>
+        <button onclick="exportData()" class="bg-gray-700 text-white px-4 py-2 rounded text-xs font-bold">EXPORT</button>
+        <button onclick="importData()" class="bg-gray-700 text-white px-4 py-2 rounded text-xs font-bold">IMPORT</button>
+        <button onclick="saveToPhotos()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">SAVE FULL IMAGE</button>
     </div>
 
     <div id="capture-wrapper">
         <header class="mb-8 text-center">
-            <h1 class="fortnite-font text-5xl text-white uppercase italic">Fortnite Sprite Tracker</h1>
+            <h1 class="fortnite-font text-5xl text-white uppercase italic">FORTNITE SPRITE TRACKER</h1>
             <p class="text-sm font-bold text-gray-400" id="stats">0 / 61 Collected (0%)</p>
         </header>
-
         <div id="grid" class="grid grid-cols-6 gap-3">
             </div>
     </div>
 
     <script>
-        // ... (Keep your spriteData array here exactly as it was) ...
-        const spriteData = [ /* ... your data ... */ ]; 
-        
+        const spriteData = [
+            { file: "Water_Sprite.JPG", rarity: "Rare", chance: "12.83%" }, { file: "Gold_Water_Sprite.JPG", rarity: "Special", chance: "0.7%" }, { file: "Gummy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" }, { file: "Galaxy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" },
+            { file: "Earth_Sprite.JPG", rarity: "Rare", chance: "12.83%" }, { file: "Gold_Earth_Sprite.JPG", rarity: "Special", chance: "0.7%" }, { file: "Gummy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" }, { file: "Galaxy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" },
+            { file: "Fire_Sprite.JPG", rarity: "Rare", chance: "12.45%" }, { file: "Gold_Fire_Sprite.JPG", rarity: "Special", chance: "0.68%" }, { file: "Gummy_Fire_Sprite.JPG", rarity: "Special", chance: "0.68%" }, { file: "Galaxy_Fire_Sprite.JPG", rarity: "Special", chance: "0.27%" },
+            { file: "Duck_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_Duck_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Duck_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Duck_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Ghost_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_Ghost_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Ghost_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Ghost_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Dream_Sprite.JPG", rarity: "Legendary", chance: "2.63%" }, { file: "Gold_Dream_Sprite.JPG", rarity: "Special", chance: "0.03%" }, { file: "Gummy_Dream_Sprite.JPG", rarity: "Special", chance: "0.02%" }, { file: "Galaxy_Dream_Sprite.JPG", rarity: "Special", chance: "0.01%" },
+            { file: "Demon_Sprite.JPG", rarity: "Epic", chance: "5.76%" }, { file: "Gold_Demon_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Demon_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Demon_Sprite.JPG", rarity: "Special", chance: "0%" },
+            { file: "Punk_Sprite.JPG", rarity: "Legendary", chance: "1.98%" }, { file: "Gold_Punk_Sprite.JPG", rarity: "Special", chance: "0.02%" }, { file: "Gummy_Punk_Sprite.JPG", rarity: "Special", chance: "0.01%" }, { file: "Galaxy_Punk_Sprite.JPG", rarity: "Special", chance: "0%" },
+            { file: "King_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_King_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_King_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_King_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Burnt_Peanut.JPG", rarity: "Mythic", chance: "1.01%" }, { file: "Zero_Point_Sprite.JPG", rarity: "Mythic", chance: "0.000098%" }, { file: "Gold_Zero_Point_Sprite.JPG", rarity: "Special", chance: "0.0000012%" }, { file: "Gummy_Zero_Point_Sprite.JPG", rarity: "Special", chance: "0.0000006%" }, { file: "Galaxy_Zero_Point_Sprite.JPG", rarity: "Special", chance: "0.0000004%" },
+            { file: "Fishy_Sprite.JPG", rarity: "Rare", chance: "13.79%" }, { file: "Gold_Fishy_Sprite.JPG", rarity: "Special", chance: "0.17%" }, { file: "Gummy_Fishy_Sprite.JPG", rarity: "Special", chance: "0.08%" }, { file: "Galaxy_Fishy_Sprite.JPG", rarity: "Special", chance: "0.06%" },
+            { file: "Striker_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_Striker_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Striker_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Striker_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Aura_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_Aura_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Aura_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Aura_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Boss_Sprite.JPG", rarity: "Legendary", chance: "2.63%" }, { file: "Gold_Boss_Sprite.JPG", rarity: "Special", chance: "0.03%" }, { file: "Gummy_Boss_Sprite.JPG", rarity: "Special", chance: "0.02%" }, { file: "Galaxy_Boss_Sprite.JPG", rarity: "Special", chance: "0.01%" },
+            { file: "Grim_Sprite.JPG", rarity: "Mythic", chance: "0.000098%" }, { file: "Gold_Grim_Sprite.JPG", rarity: "Special", chance: "0.0000012%" }, { file: "Gummy_Grim_Sprite.JPG", rarity: "Special", chance: "0.0000006%" }, { file: "Galaxy_Grim_Sprite.JPG", rarity: "Special", chance: "0.0000004%" }
+        ];
+
         let state = JSON.parse(localStorage.getItem('fnSpriteTracker61')) || {};
 
         function render() {
@@ -54,7 +67,7 @@
                     <p class="text-[8px] font-bold text-gray-300 truncate">${item.file.replace('.JPG', '').replace(/_/g, ' ')}</p>
                     <p class="text-[7px] text-gray-500 uppercase">${item.rarity}</p>
                     <button onclick="toggle('${item.file}')" class="mt-1 owned-btn w-full py-0.5 text-[7px] uppercase font-bold rounded ${state[item.file] ? 'active' : ''}">
-                        ${state[item.file] ? 'Owned' : 'Not'}
+                        ${state[item.file] ? 'Owned' : 'Not Owned'}
                     </button>
                 `;
                 grid.appendChild(card);
@@ -62,22 +75,26 @@
             document.getElementById('stats').innerText = `${count} / ${spriteData.length} Collected (${Math.round((count / spriteData.length) * 100)}%)`;
         }
 
+        function toggle(id) {
+            state[id] = !state[id];
+            localStorage.setItem('fnSpriteTracker61', JSON.stringify(state));
+            render();
+        }
+
+        function exportData() { prompt("Copy this code:", btoa(JSON.stringify(state))); }
+        function importData() {
+            const code = prompt("Paste code:");
+            if (code) { state = JSON.parse(atob(code)); localStorage.setItem('fnSpriteTracker61', JSON.stringify(state)); render(); }
+        }
+
         function saveToPhotos() {
-            const btn = event.target;
-            btn.innerText = "Generating...";
-            // We capture the wrapper, not just the grid
-            html2canvas(document.getElementById('capture-wrapper'), { 
-                backgroundColor: "#0a0a0a",
-                scale: 2 // Increases quality
-            }).then(canvas => {
-                const dataURL = canvas.toDataURL("image/png");
+            html2canvas(document.getElementById('capture-wrapper'), { backgroundColor: "#0a0a0a", scale: 2 }).then(canvas => {
                 const newTab = window.open();
-                newTab.document.write(`<img src="${dataURL}" style="width:100%">`);
-                btn.innerText = "SAVE FULL IMAGE";
+                newTab.document.write(`<img src="${canvas.toDataURL("image/png")}" style="width:100%">`);
             });
         }
-        
-        // ... (Keep your toggle, exportData, and importData functions here) ...
+
+        render(); // This line ensures the sprites actually show up on load
     </script>
 </body>
 </html>
