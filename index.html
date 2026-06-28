@@ -11,24 +11,33 @@
         .fortnite-font { font-family: 'Burbank Big Condensed', sans-serif; }
         .owned-btn { background: #262626; color: #a3a3a3; border: 1px solid #404040; }
         .owned-btn.active { background: #22c55e !important; color: white; border-color: #16a34a; }
-        #capture-wrapper { background-color: #0a0a0a; padding: 20px; color: white; }
+        
+        /* Ensures the capture area has a fixed minimum width so it doesn't squish */
+        #capture-wrapper { background-color: #0a0a0a; padding: 20px; color: white; min-width: 600px; }
+        
+        /* Better mobile responsiveness */
+        @media (max-width: 600px) {
+            #grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
     </style>
 </head>
 <body class="bg-[#0a0a0a]">
 
-    <div class="p-4 flex gap-2">
-        <button onclick="exportData()" class="bg-gray-700 text-white px-4 py-2 rounded text-xs font-bold">EXPORT</button>
-        <button onclick="importData()" class="bg-gray-700 text-white px-4 py-2 rounded text-xs font-bold">IMPORT</button>
-        <button onclick="saveToPhotos()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold">SAVE FULL IMAGE</button>
+    <div class="p-4 flex gap-2 overflow-x-auto">
+        <button onclick="exportData()" class="bg-gray-700 text-white px-4 py-2 rounded text-xs font-bold whitespace-nowrap">EXPORT</button>
+        <button onclick="importData()" class="bg-gray-700 text-white px-4 py-2 rounded text-xs font-bold whitespace-nowrap">IMPORT</button>
+        <button onclick="saveToPhotos()" class="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold whitespace-nowrap">SAVE FULL IMAGE</button>
     </div>
 
     <div id="capture-wrapper">
-        <header class="mb-8 text-center">
+        <header class="mb-8 text-center flex flex-col items-center">
             <h1 class="fortnite-font text-5xl text-white uppercase italic">FORTNITE SPRITE TRACKER</h1>
-            <p class="text-sm font-bold text-gray-400" id="stats">0 / 61 Collected (0%)</p>
+            <div class="h-4"></div> <!-- Spacer to prevent mashing -->
+            <p class="text-lg font-bold text-gray-400" id="stats">0 / 61 Collected (0%)</p>
         </header>
-        <div id="grid" class="grid grid-cols-6 gap-3">
-            </div>
+        <div id="grid" class="grid grid-cols-4 sm:grid-cols-6 gap-3">
+            <!-- Sprites injected here -->
+        </div>
     </div>
 
     <script>
@@ -59,14 +68,14 @@
             spriteData.forEach(item => {
                 if (state[item.file]) count++;
                 const card = document.createElement('div');
-                card.className = "bg-[#171717] p-2 rounded-lg border border-white/5 text-center";
+                card.className = "bg-[#171717] p-2 rounded-lg border border-white/5 text-center flex flex-col justify-between";
                 card.innerHTML = `
                     <div class="bg-black/40 aspect-square rounded mb-1 p-1">
                         <img src="images/${item.file}" class="w-full h-full object-contain">
                     </div>
-                    <p class="text-[8px] font-bold text-gray-300 truncate">${item.file.replace('.JPG', '').replace(/_/g, ' ')}</p>
-                    <p class="text-[7px] text-gray-500 uppercase">${item.rarity}</p>
-                    <button onclick="toggle('${item.file}')" class="mt-1 owned-btn w-full py-0.5 text-[7px] uppercase font-bold rounded ${state[item.file] ? 'active' : ''}">
+                    <p class="text-[10px] font-bold text-gray-300 truncate leading-tight">${item.file.replace('.JPG', '').replace(/_/g, ' ')}</p>
+                    <p class="text-[8px] text-gray-500 uppercase">${item.rarity}</p>
+                    <button onclick="toggle('${item.file}')" class="mt-1 owned-btn w-full py-1 text-[9px] uppercase font-bold rounded ${state[item.file] ? 'active' : ''}">
                         ${state[item.file] ? 'Owned' : 'Not Owned'}
                     </button>
                 `;
@@ -88,13 +97,17 @@
         }
 
         function saveToPhotos() {
-            html2canvas(document.getElementById('capture-wrapper'), { backgroundColor: "#0a0a0a", scale: 2 }).then(canvas => {
+            // Force a fixed width during capture
+            const wrapper = document.getElementById('capture-wrapper');
+            wrapper.style.width = "800px"; 
+            html2canvas(wrapper, { backgroundColor: "#0a0a0a", scale: 2 }).then(canvas => {
+                wrapper.style.width = "auto"; // Reset after capture
                 const newTab = window.open();
                 newTab.document.write(`<img src="${canvas.toDataURL("image/png")}" style="width:100%">`);
             });
         }
 
-        render(); // This line ensures the sprites actually show up on load
+        render();
     </script>
 </body>
 </html>
