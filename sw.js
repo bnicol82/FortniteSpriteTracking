@@ -1,4 +1,4 @@
-const CACHE = 'fn-sprite-v2';
+const CACHE = 'fn-sprite-v3';
 const CORE = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', event => {
