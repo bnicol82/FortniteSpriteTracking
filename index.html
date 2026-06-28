@@ -64,4 +64,134 @@
             "Boss_Sprite.JPG",
             "Burnt_Peanut.JPG",
             "Demon_Sprite.JPG",
-            "Dream_Sprite.
+            "Dream_Sprite.JPG",
+            "Duck_Sprite.JPG",
+            "Earth_Sprite.JPG",
+            "Fire_Sprite.JPG",
+            "Fishy_Sprite.JPG",
+            "Galaxy_Aura_Sprite.JPG",
+            "Galaxy_Boss_Sprite.JPG",
+            "Galaxy_Demon_Sprite.JPG",
+            "Galaxy_Dream_Sprite.JPG",
+            "Galaxy_Duck_Sprite.JPG",
+            "Galaxy_Earth_Sprite.JPG",
+            "Galaxy_Fire_Sprite.JPG",
+            "Galaxy_Fishy_Sprite.JPG",
+            "Galaxy_Ghost_Sprite.JPG",
+            "Galaxy_Grim_Sprite.JPG",
+            "Galaxy_King_Sprite.JPG",
+            "Galaxy_Punk_Sprite.JPG",
+            "Galaxy_Striker_Sprite.JPG",
+            "Galaxy_Water_Sprite.JPG",
+            "Galaxy_Zero_Point_Sprite.JPG",
+            "Ghost_Sprite.JPG",
+            "Gold_Aura_Sprite.JPG",
+            "Gold_Boss_Sprite.JPG",
+            "Gold_Demon_Sprite.JPG",
+            "Gold_Dream_Sprite.JPG",
+            "Gold_Duck_Sprite.JPG",
+            "Gold_Earth_Sprite.JPG",
+            "Gold_Fire_Sprite.JPG",
+            "Gold_Fishy_Sprite.JPG",
+            "Gold_Ghost_Sprite.JPG",
+            "Gold_Grim_Sprite.JPG",
+            "Gold_King_Sprite.JPG",
+            "Gold_Punk_Sprite.JPG",
+            "Gold_Striker_Sprite.JPG",
+            "Gold_Water_Sprite.JPG",
+            "Gold_Zero_Point_Sprite.JPG",
+            "Grim_Sprite.JPG",
+            "Gummy_Aura_Sprite.JPG",
+            "Gummy_Boss_Sprite.JPG",
+            "Gummy_Demon_Sprite.JPG",
+            "Gummy_Dream_Sprite.JPG",
+            "Gummy_Earth_Sprite.JPG",
+            "Gummy_Fishy_Sprite.JPG",
+            "Gummy_Ghost_Sprite.JPG",
+            "Gummy_Grim_Sprite.JPG",
+            "Gummy_King_Sprite.JPG",
+            "Gummy_Punk_Sprite.JPG",
+            "Gummy_Striker_Sprite.JPG",
+            "Gummy_Water_Sprite.JPG",
+            "Gummy_Zero_Point_Sprite.JPG",
+            "Gummy_Duck_Sprite.JPG",
+            "Gummy_Fire_Sprite.JPG",
+            "King_Sprite.JPG",
+            "Punk_Sprite.JPG",
+            "Striker_Sprite.JPG",
+            "Water_Sprite.JPG",
+            "Zero_Point_Sprite.JPG"
+        ];
+
+        const totalCollectibles = fileNames.length;
+        let state = JSON.parse(localStorage.getItem('fnSpriteTracker61')) || {};
+
+        function render() {
+            const grid = document.getElementById('capture-area');
+            grid.innerHTML = '';
+            let count = 0;
+
+            fileNames.forEach((fileName) => {
+                const uniqueId = fileName; 
+                
+                if (state[uniqueId]) count++;
+                const isOwned = state[uniqueId] ? 'active' : '';
+                
+                // FORMATTING: Removes .JPG (case-insensitive) and replaces underscores with spaces
+                const displayName = fileName.replace(/\.jpg$/i, '').replace(/_/g, ' ');
+                
+                const imagePath = `images/${fileName}`;
+                const fallbackImage = `https://placehold.co/200x200/171717/333333?text=MISSING&font=oswald`;
+
+                const card = document.createElement('div');
+                card.className = "bg-bgCard p-3 rounded-xl border border-white/5 text-center flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300";
+                card.innerHTML = `
+                    <div>
+                        <div class="bg-black/40 aspect-square rounded-lg mb-3 flex items-center justify-center p-2 overflow-hidden">
+                            <img src="${imagePath}" onerror="this.src='${fallbackImage}'" alt="${displayName}" class="max-w-full max-h-full object-contain drop-shadow-lg hover:scale-110 transition-transform duration-300">
+                        </div>
+                        <p class="text-[11px] sm:text-xs font-bold mb-3 text-gray-200 leading-tight h-8 flex items-center justify-center">${displayName}</p>
+                    </div>
+                    <button onclick="toggle('${uniqueId}')" class="owned-btn w-full py-2 text-[10px] sm:text-xs uppercase font-bold rounded-md transition-all duration-200 ${isOwned}">
+                        ${state[uniqueId] ? 'Owned' : 'Not Owned'}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+
+            const percent = totalCollectibles > 0 ? Math.round((count / totalCollectibles) * 100) : 0;
+            document.getElementById('stats').innerText = `${count} / ${totalCollectibles} Collected (${percent}%)`;
+        }
+
+        function toggle(id) {
+            state[id] = !state[id];
+            localStorage.setItem('fnSpriteTracker61', JSON.stringify(state));
+            render();
+        }
+
+        function saveToPhotos() {
+            const btn = document.getElementById('save-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "Capturing...";
+
+            html2canvas(document.getElementById('capture-area'), {
+                backgroundColor: "#0a0a0a",
+                scale: 2,
+                useCORS: true 
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'My_Sprite_Collection.png';
+                link.href = canvas.toDataURL();
+                link.click();
+                btn.innerText = originalText;
+            }).catch(err => {
+                console.error(err);
+                alert("Failed to save image.");
+                btn.innerText = originalText;
+            });
+        }
+
+        render();
+    </script>
+</body>
+</html>
