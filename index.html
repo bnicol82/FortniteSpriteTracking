@@ -1,38 +1,100 @@
-<div class="flex gap-2">
-    <button onclick="exportData()" class="bg-gray-700 text-white px-3 py-2 rounded text-xs">Export Code</button>
-    <button onclick="importData()" class="bg-gray-700 text-white px-3 py-2 rounded text-xs">Import Code</button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprite Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .owned-btn { background: #262626; color: #a3a3a3; border: 1px solid #404040; }
+        .owned-btn.active { background: #22c55e !important; color: white; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-gray-200 pb-20">
 
-<script>
-    // 1. Grouped Data (Organized by Sprite Type)
-    const spriteData = [
-        // Water Sprites
-        { file: "Water_Sprite.JPG", rarity: "Rare", chance: "12.83%" },
-        { file: "Gold_Water_Sprite.JPG", rarity: "Special", chance: "0.7%" },
-        { file: "Gummy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" },
-        { file: "Galaxy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" },
+    <div class="max-w-6xl mx-auto p-4">
+        <div class="flex gap-2 mb-6">
+            <button onclick="exportData()" class="bg-gray-700 px-4 py-2 rounded text-xs font-bold">EXPORT CODE</button>
+            <button onclick="importData()" class="bg-gray-700 px-4 py-2 rounded text-xs font-bold">IMPORT CODE</button>
+            <button onclick="saveToPhotos()" class="bg-blue-600 px-4 py-2 rounded text-xs font-bold">SAVE IMAGE</button>
+        </div>
         
-        // Earth Sprites
-        { file: "Earth_Sprite.JPG", rarity: "Rare", chance: "12.83%" },
-        { file: "Gold_Earth_Sprite.JPG", rarity: "Special", chance: "0.7%" },
-        { file: "Gummy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" },
-        { file: "Galaxy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" },
-        
-        // ... (Continue this pattern for all groups: Fire, Duck, Ghost, Dream, Demon, Punk, King, Zero Point, Fishy, Striker, Aura, Boss, Grim)
-    ];
+        <div id="capture-area" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            </div>
+    </div>
 
-    // 2. Import/Export Logic
-    function exportData() {
-        const dataStr = btoa(JSON.stringify(state)); // Encodes to a base64 string
-        prompt("Copy this code to save your progress:", dataStr);
-    }
+    <script>
+        // Full ordered dataset
+        const spriteData = [
+            { file: "Water_Sprite.JPG", rarity: "Rare", chance: "12.83%" }, { file: "Gold_Water_Sprite.JPG", rarity: "Special", chance: "0.7%" }, { file: "Gummy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" }, { file: "Galaxy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" },
+            { file: "Earth_Sprite.JPG", rarity: "Rare", chance: "12.83%" }, { file: "Gold_Earth_Sprite.JPG", rarity: "Special", chance: "0.7%" }, { file: "Gummy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" }, { file: "Galaxy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" },
+            { file: "Fire_Sprite.JPG", rarity: "Rare", chance: "12.45%" }, { file: "Gold_Fire_Sprite.JPG", rarity: "Special", chance: "0.68%" }, { file: "Gummy_Fire_Sprite.JPG", rarity: "Special", chance: "0.68%" }, { file: "Galaxy_Fire_Sprite.JPG", rarity: "Special", chance: "0.27%" },
+            { file: "Duck_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_Duck_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Duck_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Duck_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Ghost_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_Ghost_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Ghost_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Ghost_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Dream_Sprite.JPG", rarity: "Legendary", chance: "2.63%" }, { file: "Gold_Dream_Sprite.JPG", rarity: "Special", chance: "0.03%" }, { file: "Gummy_Dream_Sprite.JPG", rarity: "Special", chance: "0.02%" }, { file: "Galaxy_Dream_Sprite.JPG", rarity: "Special", chance: "0.01%" },
+            { file: "Demon_Sprite.JPG", rarity: "Epic", chance: "5.76%" }, { file: "Gold_Demon_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Demon_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Demon_Sprite.JPG", rarity: "Special", chance: "0%" },
+            { file: "Punk_Sprite.JPG", rarity: "Legendary", chance: "1.98%" }, { file: "Gold_Punk_Sprite.JPG", rarity: "Special", chance: "0.02%" }, { file: "Gummy_Punk_Sprite.JPG", rarity: "Special", chance: "0.01%" }, { file: "Galaxy_Punk_Sprite.JPG", rarity: "Special", chance: "0%" },
+            { file: "King_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_King_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_King_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_King_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Burnt_Peanut.JPG", rarity: "Mythic", chance: "1.01%" }, { file: "Zero_Point_Sprite.JPG", rarity: "Mythic", chance: "0.000098%" }, { file: "Gold_Zero_Point_Sprite.JPG", rarity: "Special", chance: "0.0000012%" }, { file: "Gummy_Zero_Point_Sprite.JPG", rarity: "Special", chance: "0.0000006%" }, { file: "Galaxy_Zero_Point_Sprite.JPG", rarity: "Special", chance: "0.0000004%" },
+            { file: "Fishy_Sprite.JPG", rarity: "Rare", chance: "13.79%" }, { file: "Gold_Fishy_Sprite.JPG", rarity: "Special", chance: "0.17%" }, { file: "Gummy_Fishy_Sprite.JPG", rarity: "Special", chance: "0.08%" }, { file: "Galaxy_Fishy_Sprite.JPG", rarity: "Special", chance: "0.06%" },
+            { file: "Striker_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_Striker_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Striker_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Striker_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Aura_Sprite.JPG", rarity: "Epic", chance: "5.74%" }, { file: "Gold_Aura_Sprite.JPG", rarity: "Special", chance: "0.07%" }, { file: "Gummy_Aura_Sprite.JPG", rarity: "Special", chance: "0.04%" }, { file: "Galaxy_Aura_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Boss_Sprite.JPG", rarity: "Legendary", chance: "2.63%" }, { file: "Gold_Boss_Sprite.JPG", rarity: "Special", chance: "0.03%" }, { file: "Gummy_Boss_Sprite.JPG", rarity: "Special", chance: "0.02%" }, { file: "Galaxy_Boss_Sprite.JPG", rarity: "Special", chance: "0.01%" },
+            { file: "Grim_Sprite.JPG", rarity: "Mythic", chance: "0.000098%" }, { file: "Gold_Grim_Sprite.JPG", rarity: "Special", chance: "0.0000012%" }, { file: "Gummy_Grim_Sprite.JPG", rarity: "Special", chance: "0.0000006%" }, { file: "Galaxy_Grim_Sprite.JPG", rarity: "Special", chance: "0.0000004%" }
+        ];
 
-    function importData() {
-        const code = prompt("Paste your saved code here:");
-        if (code) {
-            state = JSON.parse(atob(code));
+        let state = JSON.parse(localStorage.getItem('fnSpriteTracker61')) || {};
+
+        function render() {
+            const grid = document.getElementById('capture-area');
+            grid.innerHTML = '';
+            spriteData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-[#171717] p-3 rounded-xl border border-white/5 text-center";
+                card.innerHTML = `
+                    <div class="bg-black/40 aspect-square rounded-lg mb-2 p-2">
+                        <img src="images/${item.file}" class="w-full h-full object-contain">
+                    </div>
+                    <p class="text-[10px] font-bold text-gray-300 truncate">${item.file.replace('.JPG', '').replace(/_/g, ' ')}</p>
+                    <p class="text-[9px] text-gray-500 uppercase">${item.rarity} (${item.chance})</p>
+                    <button onclick="toggle('${item.file}')" class="mt-2 owned-btn w-full py-1 text-[9px] uppercase font-bold rounded ${state[item.file] ? 'active' : ''}">
+                        ${state[item.file] ? 'Owned' : 'Not Owned'}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function toggle(id) {
+            state[id] = !state[id];
             localStorage.setItem('fnSpriteTracker61', JSON.stringify(state));
             render();
         }
-    }
-</script>
+
+        function exportData() {
+            prompt("Copy this code:", btoa(JSON.stringify(state)));
+        }
+
+        function importData() {
+            const code = prompt("Paste code:");
+            if (code) {
+                state = JSON.parse(atob(code));
+                localStorage.setItem('fnSpriteTracker61', JSON.stringify(state));
+                render();
+            }
+        }
+
+        function saveToPhotos() {
+            html2canvas(document.getElementById('capture-area')).then(c => {
+                const link = document.createElement('a');
+                link.download = 'collection.png';
+                link.href = c.toDataURL();
+                link.click();
+            });
+        }
+
+        render();
+    </script>
+</body>
+</html>
