@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprite Tracker</title>
+    <title>Fortnite Sprite Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        .owned-btn { background: #262626; color: #a3a3a3; border: 1px solid #404040; }
-        .owned-btn.active { background: #22c55e !important; color: white; }
+        @import url('https://fonts.googleapis.com/css2?family=Burbank+Big+Condensed:wght@800&display=swap');
+        .fortnite-font { font-family: 'Burbank Big Condensed', sans-serif; }
+        .owned-btn { background: #262626; color: #a3a3a3; border: 1px solid #404040; transition: 0.2s; }
+        .owned-btn.active { background: #22c55e !important; color: white; border-color: #16a34a; }
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-gray-200 pb-20">
 
+    <header class="p-6 border-b border-white/10 mb-8 text-center bg-[#171717]">
+        <h1 class="fortnite-font text-5xl sm:text-7xl text-white uppercase tracking-wider italic">Fortnite Sprite Tracker</h1>
+        <p class="text-sm font-bold text-gray-400 mt-2" id="stats">0 / 61 Collected (0%)</p>
+    </header>
+
     <div class="max-w-6xl mx-auto p-4">
-        <div class="flex gap-2 mb-6">
-            <button onclick="exportData()" class="bg-gray-700 px-4 py-2 rounded text-xs font-bold">EXPORT CODE</button>
-            <button onclick="importData()" class="bg-gray-700 px-4 py-2 rounded text-xs font-bold">IMPORT CODE</button>
-            <button onclick="saveToPhotos()" class="bg-blue-600 px-4 py-2 rounded text-xs font-bold">SAVE IMAGE</button>
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="exportData()" class="bg-gray-700 px-4 py-2 rounded text-xs font-bold hover:bg-gray-600">EXPORT CODE</button>
+            <button onclick="importData()" class="bg-gray-700 px-4 py-2 rounded text-xs font-bold hover:bg-gray-600">IMPORT CODE</button>
+            <button onclick="saveToPhotos()" class="bg-blue-600 px-4 py-2 rounded text-xs font-bold hover:bg-blue-500">SAVE IMAGE</button>
         </div>
         
         <div id="capture-area" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -25,7 +32,6 @@
     </div>
 
     <script>
-        // Full ordered dataset
         const spriteData = [
             { file: "Water_Sprite.JPG", rarity: "Rare", chance: "12.83%" }, { file: "Gold_Water_Sprite.JPG", rarity: "Special", chance: "0.7%" }, { file: "Gummy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" }, { file: "Galaxy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" },
             { file: "Earth_Sprite.JPG", rarity: "Rare", chance: "12.83%" }, { file: "Gold_Earth_Sprite.JPG", rarity: "Special", chance: "0.7%" }, { file: "Gummy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" }, { file: "Galaxy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" },
@@ -49,7 +55,9 @@
         function render() {
             const grid = document.getElementById('capture-area');
             grid.innerHTML = '';
+            let count = 0;
             spriteData.forEach(item => {
+                if (state[item.file]) count++;
                 const card = document.createElement('div');
                 card.className = "bg-[#171717] p-3 rounded-xl border border-white/5 text-center";
                 card.innerHTML = `
@@ -64,6 +72,7 @@
                 `;
                 grid.appendChild(card);
             });
+            document.getElementById('stats').innerText = `${count} / ${spriteData.length} Collected (${Math.round((count / spriteData.length) * 100)}%)`;
         }
 
         function toggle(id) {
@@ -72,25 +81,22 @@
             render();
         }
 
-        function exportData() {
-            prompt("Copy this code:", btoa(JSON.stringify(state)));
-        }
+        function exportData() { prompt("Copy this code:", btoa(JSON.stringify(state))); }
 
         function importData() {
             const code = prompt("Paste code:");
-            if (code) {
-                state = JSON.parse(atob(code));
-                localStorage.setItem('fnSpriteTracker61', JSON.stringify(state));
-                render();
-            }
+            if (code) { state = JSON.parse(atob(code)); localStorage.setItem('fnSpriteTracker61', JSON.stringify(state)); render(); }
         }
 
         function saveToPhotos() {
+            const btn = event.target;
+            btn.innerText = "Capturing...";
             html2canvas(document.getElementById('capture-area')).then(c => {
                 const link = document.createElement('a');
-                link.download = 'collection.png';
+                link.download = 'My_Collection.png';
                 link.href = c.toDataURL();
                 link.click();
+                btn.innerText = "SAVE IMAGE";
             });
         }
 
