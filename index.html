@@ -10,34 +10,13 @@
     
     <script>
         tailwind.config = {
-            theme: { 
-                extend: { 
-                    colors: { 
-                        bgMain: '#0a0a0a', 
-                        bgCard: '#171717',
-                        accent: '#3b82f6'
-                    } 
-                } 
-            }
+            theme: { extend: { colors: { bgMain: '#0a0a0a', bgCard: '#171717' } } }
         }
     </script>
     <style>
         body { background-color: #0a0a0a; color: #e5e5e5; font-family: 'Montserrat', sans-serif; }
-        /* Sleek Apple-inspired dark mode toggle button */
-        .owned-btn {
-            background-color: #262626;
-            color: #a3a3a3;
-            border: 1px solid #404040;
-        }
-        .owned-btn:hover {
-            background-color: #333333;
-        }
-        .owned-btn.active { 
-            background-color: #22c55e !important; 
-            color: #ffffff; 
-            border-color: #16a34a;
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
-        }
+        .owned-btn { background-color: #262626; color: #a3a3a3; border: 1px solid #404040; }
+        .owned-btn.active { background-color: #22c55e !important; color: #ffffff; border-color: #16a34a; }
     </style>
 </head>
 <body class="pb-12 antialiased">
@@ -53,114 +32,106 @@
     </header>
 
     <main class="max-w-6xl mx-auto p-4 mt-4">
-        <div id="capture-area" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 bg-bgMain p-2 sm:p-0">
+        <div id="capture-area" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             </div>
     </main>
 
     <script>
-        // Exact list of 61 corrected filenames
-        const fileNames = [
-            "Aura_Sprite.JPG",
-            "Boss_Sprite.JPG",
-            "Burnt_Peanut.JPG",
-            "Demon_Sprite.JPG",
-            "Dream_Sprite.JPG",
-            "Duck_Sprite.JPG",
-            "Earth_Sprite.JPG",
-            "Fire_Sprite.JPG",
-            "Fishy_Sprite.JPG",
-            "Galaxy_Aura_Sprite.JPG",
-            "Galaxy_Boss_Sprite.JPG",
-            "Galaxy_Demon_Sprite.JPG",
-            "Galaxy_Dream_Sprite.JPG",
-            "Galaxy_Duck_Sprite.JPG",
-            "Galaxy_Earth_Sprite.JPG",
-            "Galaxy_Fire_Sprite.JPG",
-            "Galaxy_Fishy_Sprite.JPG",
-            "Galaxy_Ghost_Sprite.JPG",
-            "Galaxy_Grim_Sprite.JPG",
-            "Galaxy_King_Sprite.JPG",
-            "Galaxy_Punk_Sprite.JPG",
-            "Galaxy_Striker_Sprite.JPG",
-            "Galaxy_Water_Sprite.JPG",
-            "Galaxy_Zero_Point_Sprite.JPG",
-            "Ghost_Sprite.JPG",
-            "Gold_Aura_Sprite.JPG",
-            "Gold_Boss_Sprite.JPG",
-            "Gold_Demon_Sprite.JPG",
-            "Gold_Dream_Sprite.JPG",
-            "Gold_Duck_Sprite.JPG",
-            "Gold_Earth_Sprite.JPG",
-            "Gold_Fire_Sprite.JPG",
-            "Gold_Fishy_Sprite.JPG",
-            "Gold_Ghost_Sprite.JPG",
-            "Gold_Grim_Sprite.JPG",
-            "Gold_King_Sprite.JPG",
-            "Gold_Punk_Sprite.JPG",
-            "Gold_Striker_Sprite.JPG",
-            "Gold_Water_Sprite.JPG",
-            "Gold_Zero_Point_Sprite.JPG",
-            "Grim_Sprite.JPG",
-            "Gummy_Aura_Sprite.JPG",
-            "Gummy_Boss_Sprite.JPG",
-            "Gummy_Demon_Sprite.JPG",
-            "Gummy_Dream_Sprite.JPG",
-            "Gummy_Earth_Sprite.JPG",
-            "Gummy_Fishy_Sprite.JPG",
-            "Gummy_Ghost_Sprite.JPG",
-            "Gummy_Grim_Sprite.JPG",
-            "Gummy_King_Sprite.JPG",
-            "Gummy_Punk_Sprite.JPG",
-            "Gummy_Striker_Sprite.JPG",
-            "Gummy_Water_Sprite.JPG",
-            "Gummy_Zero_Point_Sprite.JPG",
-            "Gummy_Duck_Sprite.JPG",
-            "Gummy_Fire_Sprite.JPG",
-            "King_Sprite.JPG",
-            "Punk_Sprite.JPG",
-            "Striker_Sprite.JPG",
-            "Water_Sprite.JPG",
-            "Zero_Point_Sprite.JPG"
+        const spriteData = [
+            { file: "Aura_Sprite.JPG", rarity: "Epic", chance: "5.74%" },
+            { file: "Boss_Sprite.JPG", rarity: "Legendary", chance: "2.63%" },
+            { file: "Burnt_Peanut.JPG", rarity: "Mythic", chance: "1.01%" },
+            { file: "Demon_Sprite.JPG", rarity: "Epic", chance: "5.76%" },
+            { file: "Dream_Sprite.JPG", rarity: "Legendary", chance: "2.63%" },
+            { file: "Duck_Sprite.JPG", rarity: "Epic", chance: "5.74%" },
+            { file: "Earth_Sprite.JPG", rarity: "Rare", chance: "12.83%" },
+            { file: "Fire_Sprite.JPG", rarity: "Rare", chance: "12.45%" },
+            { file: "Fishy_Sprite.JPG", rarity: "Rare", chance: "13.79%" },
+            { file: "Galaxy_Aura_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Galaxy_Boss_Sprite.JPG", rarity: "Special", chance: "0.01%" },
+            { file: "Galaxy_Demon_Sprite.JPG", rarity: "Special", chance: "0%" },
+            { file: "Galaxy_Dream_Sprite.JPG", rarity: "Special", chance: "0.01%" },
+            { file: "Galaxy_Duck_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Galaxy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" },
+            { file: "Galaxy_Fire_Sprite.JPG", rarity: "Special", chance: "0.27%" },
+            { file: "Galaxy_Fishy_Sprite.JPG", rarity: "Special", chance: "0.06%" },
+            { file: "Galaxy_Ghost_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Galaxy_Grim_Sprite.JPG", rarity: "Special", chance: "0.0000004%" },
+            { file: "Galaxy_King_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Galaxy_Punk_Sprite.JPG", rarity: "Special", chance: "0%" },
+            { file: "Galaxy_Striker_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Galaxy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" },
+            { file: "Galaxy_Zero_Point_Sprite.JPG", rarity: "Special", chance: "0.0000004%" },
+            { file: "Ghost_Sprite.JPG", rarity: "Epic", chance: "5.74%" },
+            { file: "Gold_Aura_Sprite.JPG", rarity: "Special", chance: "0.07%" },
+            { file: "Gold_Boss_Sprite.JPG", rarity: "Special", chance: "0.03%" },
+            { file: "Gold_Demon_Sprite.JPG", rarity: "Special", chance: "0.07%" },
+            { file: "Gold_Dream_Sprite.JPG", rarity: "Special", chance: "0.03%" },
+            { file: "Gold_Duck_Sprite.JPG", rarity: "Special", chance: "0.07%" },
+            { file: "Gold_Earth_Sprite.JPG", rarity: "Special", chance: "0.7%" },
+            { file: "Gold_Fire_Sprite.JPG", rarity: "Special", chance: "0.68%" },
+            { file: "Gold_Fishy_Sprite.JPG", rarity: "Special", chance: "0.17%" },
+            { file: "Gold_Ghost_Sprite.JPG", rarity: "Special", chance: "0.07%" },
+            { file: "Gold_Grim_Sprite.JPG", rarity: "Special", chance: "0.0000012%" },
+            { file: "Gold_King_Sprite.JPG", rarity: "Special", chance: "0.07%" },
+            { file: "Gold_Punk_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Gold_Striker_Sprite.JPG", rarity: "Special", chance: "0.07%" },
+            { file: "Gold_Water_Sprite.JPG", rarity: "Special", chance: "0.7%" },
+            { file: "Gold_Zero_Point_Sprite.JPG", rarity: "Special", chance: "0.0000012%" },
+            { file: "Grim_Sprite.JPG", rarity: "Mythic", chance: "0.000098%" },
+            { file: "Gummy_Aura_Sprite.JPG", rarity: "Special", chance: "0.04%" },
+            { file: "Gummy_Boss_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Gummy_Demon_Sprite.JPG", rarity: "Special", chance: "0.04%" },
+            { file: "Gummy_Dream_Sprite.JPG", rarity: "Special", chance: "0.02%" },
+            { file: "Gummy_Earth_Sprite.JPG", rarity: "Special", chance: "0.28%" },
+            { file: "Gummy_Fishy_Sprite.JPG", rarity: "Special", chance: "0.08%" },
+            { file: "Gummy_Ghost_Sprite.JPG", rarity: "Special", chance: "0.04%" },
+            { file: "Gummy_Grim_Sprite.JPG", rarity: "Special", chance: "0.0000006%" },
+            { file: "Gummy_King_Sprite.JPG", rarity: "Special", chance: "0.04%" },
+            { file: "Gummy_Punk_Sprite.JPG", rarity: "Special", chance: "0.01%" },
+            { file: "Gummy_Striker_Sprite.JPG", rarity: "Special", chance: "0.04%" },
+            { file: "Gummy_Water_Sprite.JPG", rarity: "Special", chance: "0.28%" },
+            { file: "Gummy_Zero_Point_Sprite.JPG", rarity: "Special", chance: "0.0000006%" },
+            { file: "Gummy_Duck_Sprite.JPG", rarity: "Special", chance: "0.04%" },
+            { file: "Gummy_Fire_Sprite.JPG", rarity: "Special", chance: "0.68%" },
+            { file: "King_Sprite.JPG", rarity: "Epic", chance: "5.74%" },
+            { file: "Punk_Sprite.JPG", rarity: "Legendary", chance: "1.98%" },
+            { file: "Striker_Sprite.JPG", rarity: "Epic", chance: "5.74%" },
+            { file: "Water_Sprite.JPG", rarity: "Rare", chance: "12.83%" },
+            { file: "Zero_Point_Sprite.JPG", rarity: "Mythic", chance: "0.000098%" }
         ];
 
-        const totalCollectibles = fileNames.length;
         let state = JSON.parse(localStorage.getItem('fnSpriteTracker61')) || {};
 
         function render() {
             const grid = document.getElementById('capture-area');
             grid.innerHTML = '';
             let count = 0;
+            const rarityColors = { "Legendary": "text-orange-400", "Epic": "text-purple-400", "Rare": "text-blue-400", "Mythic": "text-yellow-500", "Special": "text-pink-400" };
 
-            fileNames.forEach((fileName) => {
-                const uniqueId = fileName; 
-                
-                if (state[uniqueId]) count++;
-                const isOwned = state[uniqueId] ? 'active' : '';
-                
-                // FORMATTING: Removes .JPG (case-insensitive) and replaces underscores with spaces
-                const displayName = fileName.replace(/\.jpg$/i, '').replace(/_/g, ' ');
-                
-                const imagePath = `images/${fileName}`;
-                const fallbackImage = `https://placehold.co/200x200/171717/333333?text=MISSING&font=oswald`;
+            spriteData.forEach((item) => {
+                if (state[item.file]) count++;
+                const isOwned = state[item.file] ? 'active' : '';
+                const displayName = item.file.replace(/\.jpg$/i, '').replace(/_/g, ' ');
+                const colorClass = rarityColors[item.rarity] || "text-gray-400";
 
                 const card = document.createElement('div');
-                card.className = "bg-bgCard p-3 rounded-xl border border-white/5 text-center flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-300";
+                card.className = "bg-bgCard p-3 rounded-xl border border-white/5 text-center flex flex-col justify-between";
                 card.innerHTML = `
                     <div>
-                        <div class="bg-black/40 aspect-square rounded-lg mb-3 flex items-center justify-center p-2 overflow-hidden">
-                            <img src="${imagePath}" onerror="this.src='${fallbackImage}'" alt="${displayName}" class="max-w-full max-h-full object-contain drop-shadow-lg hover:scale-110 transition-transform duration-300">
+                        <div class="bg-black/40 aspect-square rounded-lg mb-2 flex items-center justify-center p-2">
+                            <img src="images/${item.file}" onerror="this.src='https://placehold.co/200x200/171717/333333?text=MISSING'" class="max-w-full max-h-full object-contain">
                         </div>
-                        <p class="text-[11px] sm:text-xs font-bold mb-3 text-gray-200 leading-tight h-8 flex items-center justify-center">${displayName}</p>
+                        <p class="text-xs font-bold text-gray-200">${displayName}</p>
+                        <p class="text-[10px] ${colorClass} uppercase font-bold tracking-wider">${item.rarity} <span class="opacity-70">(${item.chance})</span></p>
                     </div>
-                    <button onclick="toggle('${uniqueId}')" class="owned-btn w-full py-2 text-[10px] sm:text-xs uppercase font-bold rounded-md transition-all duration-200 ${isOwned}">
-                        ${state[uniqueId] ? 'Owned' : 'Not Owned'}
+                    <button onclick="toggle('${item.file}')" class="mt-3 owned-btn w-full py-1 text-[10px] uppercase font-bold rounded ${isOwned}">
+                        ${state[item.file] ? 'Owned' : 'Not Owned'}
                     </button>
                 `;
                 grid.appendChild(card);
             });
-
-            const percent = totalCollectibles > 0 ? Math.round((count / totalCollectibles) * 100) : 0;
-            document.getElementById('stats').innerText = `${count} / ${totalCollectibles} Collected (${percent}%)`;
+            document.getElementById('stats').innerText = `${count} / ${spriteData.length} Collected (${Math.round((count / spriteData.length) * 100)}%)`;
         }
 
         function toggle(id) {
@@ -173,20 +144,11 @@
             const btn = document.getElementById('save-btn');
             const originalText = btn.innerText;
             btn.innerText = "Capturing...";
-
-            html2canvas(document.getElementById('capture-area'), {
-                backgroundColor: "#0a0a0a",
-                scale: 2,
-                useCORS: true 
-            }).then(canvas => {
+            html2canvas(document.getElementById('capture-area'), { backgroundColor: "#0a0a0a", scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'My_Sprite_Collection.png';
                 link.href = canvas.toDataURL();
                 link.click();
-                btn.innerText = originalText;
-            }).catch(err => {
-                console.error(err);
-                alert("Failed to save image.");
                 btn.innerText = originalText;
             });
         }
