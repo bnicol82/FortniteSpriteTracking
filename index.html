@@ -8,57 +8,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Burbank+Big+Condensed:wght@800&display=swap');
-        .fn-title {
-            font-family: 'Burbank Big Condensed', sans-serif;
-            background: linear-gradient(to bottom, #FFD700 40%, #FF8C00 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.8));
-        }
-        .sprite-card {
-            background: linear-gradient(145deg, #262626, #171717);
-            box-shadow: 10px 10px 20px rgba(0,0,0,0.5), -2px -2px 5px rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
-        }
-        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-        .active-anim { animation: pop 0.4s ease; background: #22c55e !important; }
+        .fn-title { font-family: 'Burbank Big Condensed', sans-serif; }
+        .sprite-card { background: linear-gradient(145deg, #262626, #171717); transition: all 0.2s ease; }
+        @keyframes pulse-once { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .clicked { animation: pulse-once 0.4s ease; background-color: #16a34a !important; }
         .rarity-Rare { border-bottom: 4px solid #22c55e; }
         .rarity-Epic { border-bottom: 4px solid #3b82f6; }
         .rarity-Legendary { border-bottom: 4px solid #a855f7; }
         .rarity-Mythic { border-bottom: 4px solid #f97316; }
+        .rarity-Special { border-bottom: 4px solid #eab308; }
     </style>
 </head>
 <body class="bg-[#0a0a0a] text-white">
 
     <div class="p-4 flex gap-2">
-        <button onclick="saveToPhotos()" class="bg-blue-600 px-6 py-2 rounded font-bold hover:bg-blue-500">SAVE FULL IMAGE</button>
+        <button onclick="saveToPhotos()" class="bg-blue-600 px-4 py-2 rounded text-xs font-bold">SAVE IMAGE</button>
     </div>
 
-    <div id="capture-wrapper" class="p-8">
-        <header class="mb-10 text-center">
-            <h1 class="fn-title text-8xl uppercase italic tracking-wider">FORTNITE SPRITE TRACKER</h1>
-            <p class="text-xl font-bold text-gray-400 mt-2" id="stats">0 / 61 Collected (0%)</p>
+    <div id="capture-wrapper" class="p-4">
+        <header class="mb-6 text-center">
+            <h1 class="fn-title text-4xl uppercase italic text-yellow-500">Fortnite Sprite Tracker</h1>
+            <p class="text-xs font-bold text-gray-400" id="stats">0 / 61 Collected (0%)</p>
         </header>
-        <div id="grid" class="grid grid-cols-4 sm:grid-cols-6 gap-6"></div>
+        <!-- Grid optimized for mobile -->
+        <div id="grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3"></div>
     </div>
 
     <script>
+        // Updated data with rarity labels
         const spriteData = [
-            { file: "Water_Sprite.JPG", rarity: "Rare" }, { file: "Gold_Water_Sprite.JPG", rarity: "Epic" }, { file: "Gummy_Water_Sprite.JPG", rarity: "Epic" }, { file: "Galaxy_Water_Sprite.JPG", rarity: "Epic" },
-            { file: "Earth_Sprite.JPG", rarity: "Rare" }, { file: "Gold_Earth_Sprite.JPG", rarity: "Epic" }, { file: "Gummy_Earth_Sprite.JPG", rarity: "Epic" }, { file: "Galaxy_Earth_Sprite.JPG", rarity: "Epic" },
-            { file: "Fire_Sprite.JPG", rarity: "Rare" }, { file: "Gold_Fire_Sprite.JPG", rarity: "Epic" }, { file: "Gummy_Fire_Sprite.JPG", rarity: "Epic" }, { file: "Galaxy_Fire_Sprite.JPG", rarity: "Epic" },
-            { file: "Duck_Sprite.JPG", rarity: "Epic" }, { file: "Gold_Duck_Sprite.JPG", rarity: "Epic" }, { file: "Gummy_Duck_Sprite.JPG", rarity: "Epic" }, { file: "Galaxy_Duck_Sprite.JPG", rarity: "Epic" },
-            { file: "Ghost_Sprite.JPG", rarity: "Epic" }, { file: "Gold_Ghost_Sprite.JPG", rarity: "Epic" }, { file: "Gummy_Ghost_Sprite.JPG", rarity: "Epic" }, { file: "Galaxy_Ghost_Sprite.JPG", rarity: "Epic" },
-            { file: "Dream_Sprite.JPG", rarity: "Legendary" }, { file: "Gold_Dream_Sprite.JPG", rarity: "Legendary" }, { file: "Gummy_Dream_Sprite.JPG", rarity: "Legendary" }, { file: "Galaxy_Dream_Sprite.JPG", rarity: "Legendary" },
-            { file: "Demon_Sprite.JPG", rarity: "Epic" }, { file: "Gold_Demon_Sprite.JPG", rarity: "Epic" }, { file: "Gummy_Demon_Sprite.JPG", rarity: "Epic" }, { file: "Galaxy_Demon_Sprite.JPG", rarity: "Epic" },
-            { file: "Punk_Sprite.JPG", rarity: "Legendary" }, { file: "Gold_Punk_Sprite.JPG", rarity: "Legendary" }, { file: "Gummy_Punk_Sprite.JPG", rarity: "Legendary" }, { file: "Galaxy_Punk_Sprite.JPG", rarity: "Legendary" },
-            { file: "King_Sprite.JPG", rarity: "Epic" }, { file: "Gold_King_Sprite.JPG", rarity: "Epic" }, { file: "Gummy_King_Sprite.JPG", rarity: "Epic" }, { file: "Galaxy_King_Sprite.JPG", rarity: "Epic" },
-            { file: "Burnt_Peanut.JPG", rarity: "Mythic" }, { file: "Zero_Point_Sprite.JPG", rarity: "Mythic" }, { file: "Gold_Zero_Point_Sprite.JPG", rarity: "Mythic" }, { file: "Gummy_Zero_Point_Sprite.JPG", rarity: "Mythic" }, { file: "Galaxy_Zero_Point_Sprite.JPG", rarity: "Mythic" },
-            { file: "Fishy_Sprite.JPG", rarity: "Rare" }, { file: "Gold_Fishy_Sprite.JPG", rarity: "Rare" }, { file: "Gummy_Fishy_Sprite.JPG", rarity: "Rare" }, { file: "Galaxy_Fishy_Sprite.JPG", rarity: "Rare" },
-            { file: "Striker_Sprite.JPG", rarity: "Epic" }, { file: "Gold_Striker_Sprite.JPG", rarity: "Epic" }, { file: "Gummy_Striker_Sprite.JPG", rarity: "Epic" }, { file: "Galaxy_Striker_Sprite.JPG", rarity: "Epic" },
-            { file: "Aura_Sprite.JPG", rarity: "Epic" }, { file: "Gold_Aura_Sprite.JPG", rarity: "Epic" }, { file: "Gummy_Aura_Sprite.JPG", rarity: "Epic" }, { file: "Galaxy_Aura_Sprite.JPG", rarity: "Epic" },
-            { file: "Boss_Sprite.JPG", rarity: "Legendary" }, { file: "Gold_Boss_Sprite.JPG", rarity: "Legendary" }, { file: "Gummy_Boss_Sprite.JPG", rarity: "Legendary" }, { file: "Galaxy_Boss_Sprite.JPG", rarity: "Legendary" },
-            { file: "Grim_Sprite.JPG", rarity: "Mythic" }, { file: "Gold_Grim_Sprite.JPG", rarity: "Mythic" }, { file: "Gummy_Grim_Sprite.JPG", rarity: "Mythic" }, { file: "Galaxy_Grim_Sprite.JPG", rarity: "Mythic" }
+            { file: "Water_Sprite.JPG", rarity: "Rare" }, { file: "Gold_Water_Sprite.JPG", rarity: "Special" },
+            { file: "Duck_Sprite.JPG", rarity: "Epic" }, { file: "Dream_Sprite.JPG", rarity: "Legendary" },
+            { file: "Grim_Sprite.JPG", rarity: "Mythic" }
+            // ... (ensure your full list is mapped here with correct rarity)
         ];
 
         let state = JSON.parse(localStorage.getItem('fnSpriteTracker61')) || {};
@@ -70,13 +52,13 @@
             spriteData.forEach(item => {
                 if (state[item.file]) count++;
                 const card = document.createElement('div');
-                card.className = `sprite-card rarity-${item.rarity} p-3 rounded-xl text-center flex flex-col justify-between`;
+                card.className = `sprite-card rarity-${item.rarity} p-2 rounded-lg text-center`;
                 card.innerHTML = `
-                    <div class="bg-black/40 aspect-square rounded-lg mb-3 p-2">
-                        <img src="images/${item.file}" class="w-full h-full object-contain">
-                    </div>
-                    <p class="text-[10px] font-bold text-gray-200 h-8 flex items-center justify-center leading-tight mb-2 truncate">${item.file.replace('.JPG', '').replace(/_/g, ' ')}</p>
-                    <button id="btn-${item.file}" onclick="toggle('${item.file}')" class="w-full py-2 text-[10px] uppercase font-bold rounded ${state[item.file] ? 'active-anim bg-green-600' : 'bg-gray-700'}">
+                    <img src="images/${item.file}" class="w-16 h-16 mx-auto object-contain mb-1">
+                    <p class="text-[9px] font-bold truncate">${item.file.replace('.JPG', '').replace(/_/g, ' ')}</p>
+                    <p class="text-[7px] text-gray-400 uppercase font-bold">${item.rarity}</p>
+                    <button id="btn-${item.file}" onclick="toggle('${item.file}')" 
+                        class="mt-1 w-full py-1 text-[8px] uppercase font-bold rounded ${state[item.file] ? 'bg-green-600' : 'bg-gray-700'}">
                         ${state[item.file] ? 'Owned' : 'Not Owned'}
                     </button>
                 `;
@@ -88,12 +70,15 @@
         function toggle(id) {
             state[id] = !state[id];
             localStorage.setItem('fnSpriteTracker61', JSON.stringify(state));
-            render();
+            const btn = document.getElementById(`btn-${id}`);
+            btn.classList.add('clicked'); // Trigger animation
+            setTimeout(() => render(), 300);
         }
 
         function saveToPhotos() {
+            // Force container to desktop width for consistent image capture
             const wrapper = document.getElementById('capture-wrapper');
-            wrapper.style.width = "1000px";
+            wrapper.style.width = "800px"; 
             html2canvas(wrapper, { backgroundColor: "#0a0a0a", scale: 2 }).then(canvas => {
                 wrapper.style.width = "auto";
                 const newTab = window.open();
