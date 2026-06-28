@@ -436,8 +436,11 @@
             filter.rarity = btn.dataset.rarity;
             render();
         });
-        // Belt-and-suspenders: stop the native long-press callout anywhere in the grid.
-        document.getElementById('grid').addEventListener('contextmenu', e => e.preventDefault());
+        // Suppress the native long-press callout app-wide (keep it for text fields so paste works).
+        document.addEventListener('contextmenu', e => {
+            if (e.target.closest('input, textarea')) return;
+            e.preventDefault();
+        });
 
         /* ---------- Reset ---------- */
         function resetAll() {
