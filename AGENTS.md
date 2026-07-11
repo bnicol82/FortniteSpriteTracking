@@ -13,5 +13,6 @@ A single-page web app ("Fortnite Sprite Tracker"). It lets you mark which sprite
   - `cd server && npm install && npm start`
   - Open `http://localhost:8000`
   - Optional: copy `server/.env.example` to `server/.env` and set `JWT_SECRET`.
-  - User accounts and sprite collections are stored in SQLite at `data/sprites.db`.
+  - **Neon Postgres:** set `DATABASE_URL` in `server/.env` with your connection string from the [Neon console](https://console.neon.tech/app/projects/super-queen-85743129) (Dashboard → Connect). Without it, the server falls back to local SQLite at `data/sprites.db`.
+  - User accounts and sprite collections persist in Neon (or SQLite locally).
 - Clear site data (or sign out) to reset local state; cloud data remains until overwritten while signed in.
