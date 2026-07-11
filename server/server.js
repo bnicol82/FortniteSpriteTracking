@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import express from 'express';
 import jwt from 'jsonwebtoken';
@@ -16,6 +17,7 @@ import {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
+dotenv.config({ path: path.join(__dirname, '.env') });
 const PORT = Number(process.env.PORT || 8000);
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 const TOKEN_TTL = '30d';

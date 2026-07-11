@@ -1,0 +1,38 @@
+name: Neon Database
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server/**'
+      - '.github/workflows/neon.yml'
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Verify Neon connection and apply schema
+        working-directory: server
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+          JWT_SECRET: ci-test-secret
+        run: |
+          node --input-type=module -e "
+            import { initDatabase } from './db.js';
+            const db = await initDatabase();
+            if (db.kind !== 'postgres') throw new Error('Expected Neon Postgres, got ' + db.kind);
+            console.log('Neon Postgres connected successfully');
+            process.exit(0);
+          "

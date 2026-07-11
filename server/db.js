@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
+import { resolveNeonDatabaseUrl } from './neon.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const defaultDbPath = path.join(__dirname, '..', 'data', 'sprites.db');
@@ -43,9 +44,10 @@ CREATE TABLE IF NOT EXISTS collections (
 `;
 
 export async function initDatabase() {
-  if (process.env.DATABASE_URL) {
+  const databaseUrl = await resolveNeonDatabaseUrl();
+  if (databaseUrl) {
     const pool = new pg.Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: databaseUrl,
       ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false }
     });
     await pool.query(POSTGRES_SCHEMA);
