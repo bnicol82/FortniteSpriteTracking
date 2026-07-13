@@ -65,6 +65,10 @@
         <div class="mt-2 h-2.5 w-full rounded-full bg-white/10 overflow-hidden">
             <div id="progress-bar" class="h-full rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 transition-all duration-500" style="width:0%"></div>
         </div>
+        <div class="mt-2 flex items-center justify-between gap-2">
+            <button id="account-btn" onclick="openAccount()" class="bg-[#1a1a1a] border border-[#2e2e2e] px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase text-yellow-400 active:bg-[#262626]">Account</button>
+            <span id="sync-status" class="text-[10px] font-bold text-gray-500 truncate"></span>
+        </div>
     </header>
 
     <!-- Controls -->
@@ -124,7 +128,7 @@
                 <h3 class="fn-title text-xl uppercase italic text-yellow-500">Sync &amp; Backup</h3>
                 <button onclick="closeBackup()" class="text-gray-400 text-2xl leading-none px-2">&times;</button>
             </div>
-            <p class="text-[11px] text-gray-400 mb-4">No account needed. Copy your code or share link to move your collection to another phone.</p>
+            <p class="text-[11px] text-gray-400 mb-4">Copy a code or share link to move your collection between devices. Sign in to an account to save your collection in the cloud automatically.</p>
 
             <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Share link</label>
             <div class="flex gap-2 mb-4">
@@ -139,6 +143,52 @@
                 <button onclick="doRestore()" class="bg-green-600 py-2.5 rounded-lg text-[11px] font-extrabold uppercase">Restore</button>
             </div>
             <p id="modal-msg" class="text-[11px] text-center mt-3 h-4"></p>
+        </div>
+    </div>
+
+    <!-- Account modal -->
+    <div id="account-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+        <div class="absolute inset-0 bg-black/70" onclick="closeAccount()"></div>
+        <div class="relative w-full sm:max-w-md bg-[#141414] border border-[#2e2e2e] rounded-t-2xl sm:rounded-2xl p-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="fn-title text-xl uppercase italic text-yellow-500">Account</h3>
+                <button onclick="closeAccount()" class="text-gray-400 text-2xl leading-none px-2">&times;</button>
+            </div>
+
+            <div id="account-signed-out">
+                <p class="text-[11px] text-gray-400 mb-4">Create an account to save your sprite collection across devices.</p>
+                <div class="flex gap-1 bg-[#0a0a0a] p-1 rounded-xl mb-4">
+                    <button id="auth-tab-login" class="seg-btn active" data-auth-tab="login">Sign In</button>
+                    <button id="auth-tab-register" class="seg-btn" data-auth-tab="register">Register</button>
+                </div>
+                <form id="auth-form" class="space-y-3" onsubmit="submitAuth(event)">
+                    <div id="auth-display-wrap" class="hidden">
+                        <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Display name</label>
+                        <input id="auth-display" type="text" maxlength="40" autocomplete="nickname"
+                            class="w-full bg-[#0a0a0a] border border-[#2e2e2e] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-yellow-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Email</label>
+                        <input id="auth-email" type="email" required autocomplete="email"
+                            class="w-full bg-[#0a0a0a] border border-[#2e2e2e] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-yellow-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Password</label>
+                        <input id="auth-password" type="password" required minlength="8" autocomplete="current-password"
+                            class="w-full bg-[#0a0a0a] border border-[#2e2e2e] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-yellow-500">
+                    </div>
+                    <button type="submit" id="auth-submit" class="w-full bg-green-600 active:bg-green-700 py-3 rounded-xl text-sm font-extrabold uppercase">Sign In</button>
+                </form>
+                <p id="auth-msg" class="text-[11px] text-center mt-3 min-h-[16px]"></p>
+            </div>
+
+            <div id="account-signed-in" class="hidden">
+                <p class="text-[11px] text-gray-400 mb-1">Signed in as</p>
+                <p id="account-name" class="text-sm font-extrabold text-white mb-1"></p>
+                <p id="account-email" class="text-[11px] text-gray-400 mb-4"></p>
+                <p id="account-sync-note" class="text-[11px] text-green-400 mb-4">Your collection syncs automatically when you make changes.</p>
+                <button onclick="logoutAccount()" class="w-full bg-[#1f1f1f] border border-[#2e2e2e] text-red-400 py-3 rounded-xl text-sm font-extrabold uppercase">Sign Out</button>
+            </div>
         </div>
     </div>
 
@@ -175,6 +225,8 @@
         ];
 
         const STORAGE_KEY = 'fnSpriteTracker61';
+        const AUTH_TOKEN_KEY = 'fnSpriteTrackerToken';
+        const API_BASE = '';
         const RARITIES = ['Rare', 'Epic', 'Legendary', 'Mythic', 'Special'];
         const RARITY_RANK = { Rare: 0, Epic: 1, Legendary: 2, Mythic: 3, Special: 4 };
         const RARITY_COLOR = { Rare: '#3b82f6', Epic: '#a855f7', Legendary: '#eab308', Mythic: '#f97316', Special: '#e5e7eb' };
@@ -185,11 +237,185 @@
         let filter = { search: '', status: 'all', rarity: 'all', sort: 'default' };
         let view = 'grid';
         let previewFile = null;
+        let authToken = localStorage.getItem(AUTH_TOKEN_KEY) || null;
+        let currentUser = null;
+        let authMode = 'login';
+        let cloudAvailable = false;
+        let syncTimer = null;
+        let syncPending = false;
 
         const prettyName = f => f.replace('.JPG', '').replace(/_/g, ' ');
         const prettyFamily = key => prettyName(key + '.JPG').replace(/ Sprite$/, '');
         const isOwned = f => !!state[f];
-        const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        const saveLocal = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+        function mergeOwned(local, remote) {
+            const next = Object.assign({}, remote || {});
+            Object.keys(local || {}).forEach(key => { if (local[key]) next[key] = true; });
+            return next;
+        }
+
+        function setSyncStatus(text, tone) {
+            const el = document.getElementById('sync-status');
+            el.innerText = text || '';
+            el.className = 'text-[10px] font-bold truncate ' + (tone === 'ok' ? 'text-green-400' : tone === 'err' ? 'text-red-400' : 'text-gray-500');
+        }
+
+        function renderAccountUi() {
+            const btn = document.getElementById('account-btn');
+            if (currentUser) {
+                btn.innerText = currentUser.displayName || 'Account';
+                btn.className = 'bg-green-950 border border-green-700 px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase text-green-300 active:bg-green-900';
+                document.getElementById('account-signed-out').classList.add('hidden');
+                document.getElementById('account-signed-in').classList.remove('hidden');
+                document.getElementById('account-name').innerText = currentUser.displayName || 'Player';
+                document.getElementById('account-email').innerText = currentUser.email;
+            } else {
+                btn.innerText = cloudAvailable ? 'Account' : 'Account (offline)';
+                btn.className = 'bg-[#1a1a1a] border border-[#2e2e2e] px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase text-yellow-400 active:bg-[#262626]';
+                document.getElementById('account-signed-out').classList.remove('hidden');
+                document.getElementById('account-signed-in').classList.add('hidden');
+            }
+        }
+
+        async function apiFetch(path, options) {
+            const headers = Object.assign({ 'Content-Type': 'application/json' }, (options && options.headers) || {});
+            if (authToken) headers.Authorization = 'Bearer ' + authToken;
+            const res = await fetch(API_BASE + path, Object.assign({}, options, { headers }));
+            let data = null;
+            try { data = await res.json(); } catch (e) { data = null; }
+            if (!res.ok) {
+                const err = new Error((data && data.error) || 'Request failed');
+                err.status = res.status;
+                throw err;
+            }
+            return data;
+        }
+
+        async function detectCloudBackend() {
+            try {
+                const res = await fetch(API_BASE + '/api/health');
+                cloudAvailable = res.ok;
+            } catch (e) {
+                cloudAvailable = false;
+            }
+            renderAccountUi();
+        }
+
+        async function pushCollection() {
+            if (!authToken || !cloudAvailable) return;
+            syncPending = true;
+            setSyncStatus('Syncing…');
+            try {
+                await apiFetch('/api/collection', {
+                    method: 'PUT',
+                    body: JSON.stringify({ owned: state })
+                });
+                setSyncStatus('Cloud saved', 'ok');
+            } catch (e) {
+                setSyncStatus('Sync failed', 'err');
+            } finally {
+                syncPending = false;
+            }
+        }
+
+        function queueCloudSync() {
+            if (!authToken || !cloudAvailable) return;
+            clearTimeout(syncTimer);
+            syncTimer = setTimeout(pushCollection, 400);
+        }
+
+        function save() {
+            saveLocal();
+            queueCloudSync();
+        }
+
+        async function loadCloudCollection() {
+            const data = await apiFetch('/api/collection');
+            state = mergeOwned(state, data.owned || {});
+            saveLocal();
+            render();
+        }
+
+        async function restoreSession() {
+            if (!authToken || !cloudAvailable) return;
+            try {
+                const data = await apiFetch('/api/auth/me');
+                currentUser = data.user;
+                await loadCloudCollection();
+                setSyncStatus('Signed in • cloud synced', 'ok');
+            } catch (e) {
+                authToken = null;
+                currentUser = null;
+                localStorage.removeItem(AUTH_TOKEN_KEY);
+                setSyncStatus('');
+            }
+            renderAccountUi();
+        }
+
+        function setAuthMode(mode) {
+            authMode = mode;
+            document.getElementById('auth-display-wrap').classList.toggle('hidden', mode !== 'register');
+            document.getElementById('auth-submit').innerText = mode === 'register' ? 'Create Account' : 'Sign In';
+            document.getElementById('auth-password').autocomplete = mode === 'register' ? 'new-password' : 'current-password';
+            setActive('[data-auth-tab]', document.querySelector('[data-auth-tab="' + mode + '"]'));
+        }
+
+        function openAccount() {
+            document.getElementById('auth-msg').innerText = '';
+            if (!cloudAvailable) {
+                document.getElementById('auth-msg').className = 'text-[11px] text-center mt-3 min-h-[16px] text-yellow-400';
+                document.getElementById('auth-msg').innerText = 'Cloud accounts require the Node server. Run: cd server && npm install && npm start';
+            }
+            renderAccountUi();
+            document.getElementById('account-modal').classList.remove('hidden');
+        }
+
+        function closeAccount() {
+            document.getElementById('account-modal').classList.add('hidden');
+        }
+
+        async function submitAuth(event) {
+            event.preventDefault();
+            if (!cloudAvailable) return;
+            const msg = document.getElementById('auth-msg');
+            msg.className = 'text-[11px] text-center mt-3 min-h-[16px] text-gray-400';
+            msg.innerText = authMode === 'register' ? 'Creating account…' : 'Signing in…';
+
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const displayName = document.getElementById('auth-display').value.trim();
+            const path = authMode === 'register' ? '/api/auth/register' : '/api/auth/login';
+            const body = authMode === 'register'
+                ? { email, password, displayName: displayName || undefined }
+                : { email, password };
+
+            try {
+                const data = await apiFetch(path, { method: 'POST', body: JSON.stringify(body) });
+                authToken = data.token;
+                currentUser = data.user;
+                localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+                await loadCloudCollection();
+                await pushCollection();
+                msg.className = 'text-[11px] text-center mt-3 min-h-[16px] text-green-400';
+                msg.innerText = authMode === 'register' ? 'Account created!' : 'Signed in!';
+                renderAccountUi();
+                setSyncStatus('Signed in • cloud synced', 'ok');
+                setTimeout(closeAccount, 700);
+            } catch (e) {
+                msg.className = 'text-[11px] text-center mt-3 min-h-[16px] text-red-400';
+                msg.innerText = e.message || 'Could not sign in.';
+            }
+        }
+
+        function logoutAccount() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            setSyncStatus('Signed out • local data kept');
+            renderAccountUi();
+            closeAccount();
+        }
 
         // Build sprite families (base + Gold/Gummy/Galaxy/Holofoil variants).
         spriteData.forEach((item, i) => { item._i = i; });
@@ -435,6 +661,8 @@
             filter.rarity = btn.dataset.rarity;
             render();
         });
+        document.querySelectorAll('[data-auth-tab]').forEach(b => b.addEventListener('click', () => setAuthMode(b.dataset.authTab)));
+        setAuthMode('login');
         // Suppress the native long-press callout app-wide (keep it for text fields so paste works).
         document.addEventListener('contextmenu', e => {
             if (e.target.closest('input, textarea')) return;
@@ -552,7 +780,11 @@
             window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
         }
 
-        render();
+        (async function initApp() {
+            await detectCloudBackend();
+            await restoreSession();
+            render();
+        })();
     </script>
 </body>
 </html>
